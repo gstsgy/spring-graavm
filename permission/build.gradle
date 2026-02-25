@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    // 1. 使用官方目前的稳定版本 3.4.2
+    id 'org.springframework.boot' version '3.4.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.graalvm.buildtools.native' version '0.11.4'
+
+}
+
+group = "com.gstsgy"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    // 2. 对于 Java 17，Toolchain 建议这样写
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+
+    //gradlePluginPortal()
+    mavenCentral() // Add this to find the Jimmer plugin artifact
+
+}
+dependencies {
+    // 3. 插件正确后，这里不需要写版本号
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-gson:0.11.5'
+    implementation 'com.warrenstrange:googleauth:1.0.0'
+    implementation(project(':base'))
+}

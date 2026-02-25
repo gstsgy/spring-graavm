@@ -1,0 +1,5 @@
+rootProject.name = 'native'
+include 'base'
+include 'webapi'
+include 'permission'
+

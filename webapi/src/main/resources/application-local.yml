@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    # 数据库文件路径。file:data.db 表示在项目根目录下创建 data.db 文件
+    url: jdbc:sqlite:file:/data/pro/t2/webapi/src/main/resources/db
+    username: admin  # SQLite 默认不需要用户名，但某些驱动要求占位
+    password: ""
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
