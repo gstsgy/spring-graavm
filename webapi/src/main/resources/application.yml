@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: local
+  batch:
+    job:
+      enabled: true
+    jdbc:
+      initialize-schema: always
+  jpa:
+    properties:
+      hibernate:
+        # 核心配置：自动为所有标识符（表名、列名）添加引号
+        globally_quoted_identifiers: true
+  freemarker:
+    template-loader-path: classpath:/report/
+    suffix: .ftl
+
+
+
