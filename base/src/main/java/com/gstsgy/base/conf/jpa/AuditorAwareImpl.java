@@ -1,4 +1,4 @@
-package com.gstsgy.base.conf;
+package com.gstsgy.base.conf.jpa;
 
 import com.gstsgy.base.utils.WebUtils;
 import org.springframework.data.domain.AuditorAware;

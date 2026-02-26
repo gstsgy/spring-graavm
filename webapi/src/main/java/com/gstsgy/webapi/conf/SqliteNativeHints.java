@@ -1,5 +1,6 @@
 package com.gstsgy.webapi.conf;
 
+import com.gstsgy.permission.bean.view.WebEnumVO;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -10,6 +11,7 @@ public class SqliteNativeHints implements RuntimeHintsRegistrar {
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         // 显式注册方言类，防止被 GraalVM 优化掉
         hints.reflection().registerType(SQLiteDialect.class, MemberCategory.values());
+        hints.reflection().registerType(WebEnumVO.class, MemberCategory.values());
     }
 }
 

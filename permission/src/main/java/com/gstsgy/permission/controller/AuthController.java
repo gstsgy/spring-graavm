@@ -3,7 +3,9 @@ package com.gstsgy.permission.controller;
 import com.gstsgy.base.bean.dto.ResponseBean;
 import com.gstsgy.base.utils.Encrypt;
 import com.gstsgy.base.utils.WebUtils;
+import com.gstsgy.permission.bean.db.Btn;
 import com.gstsgy.permission.bean.db.Operator;
+import com.gstsgy.permission.bean.view.MenuTreeVO;
 import com.gstsgy.permission.conf.IpConfCache;
 import com.gstsgy.permission.service.OperatorService;
 import com.gstsgy.permission.service.RoleMenuService;
@@ -11,6 +13,7 @@ import com.gstsgy.permission.utils.GoogleAuthenticatorUtils;
 import com.gstsgy.permission.utils.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,8 @@ import java.util.Objects;
 @Tag(name = "登录接口")
 @RestController
 @RequestMapping("auth")
+
+@RegisterReflectionForBinding({MenuTreeVO.class})
 public class AuthController {
     @Autowired
     private OperatorService userService;

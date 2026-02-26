@@ -1,7 +1,5 @@
 package com.gstsgy.base.bean.db;
 
-
-import com.gstsgy.base.bean.anno.NotUpdate;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.SoftDelete;
@@ -9,13 +7,15 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@EntityListeners(AuditingEntityListener.class)
 @Data
 @SoftDelete(columnName = "is_del") // 核心注解
 @MappedSuperclass
 public class BaseTable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(updatable = false)

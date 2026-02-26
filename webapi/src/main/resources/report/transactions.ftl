@@ -2,10 +2,10 @@
 <#macro transactions>
     select s.*, o.nick_name as user_name, a.`name` as account_name
     from transactions s
-    left join operator o on s.user_id = o.id and o.effective=1
-    left join account_book a on s.account_id = a.id and a.effective=1
+    left join operator o on s.user_id = o.id and o.is_del=0
+    left join account_book a on s.account_id = a.id and a.is_del=0
     where 1=1
-    and s.effective = 1
+    and s.is_del = 0
     and s.account_id = :accountId
 
 <#-- 参数校验建议加上 != "" 防止空字符串干扰 -->

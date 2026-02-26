@@ -1,25 +1,15 @@
 package com.gstsgy.base.conf;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.gstsgy.base.bean.enums.BaseEnum;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.type.ClassMetadata;
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.util.ClassUtils;
-
 import java.io.IOException;
-import java.util.*;
 
 @Configuration
 public class JsonConf {

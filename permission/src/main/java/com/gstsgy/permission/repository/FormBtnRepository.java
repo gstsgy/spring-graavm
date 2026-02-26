@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface FormBtnRepository extends BaseRepository<FormBtn> {
     List<FormBtn> findFormBtnsByFormId(Long formId);
+
+    List<FormBtn> findFormBtnsByIdIn(List<Long> ids);
 }

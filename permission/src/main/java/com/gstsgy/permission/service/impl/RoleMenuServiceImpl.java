@@ -84,14 +84,21 @@ public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenu, RoleMenuRepos
             List<Long> roleIds = userRoleRepository.findByUserId(userId).stream()
                     .map(UserRole::getRoleId).collect(Collectors.toList());
 
-            List<Long> authorizedMenuIds = repository.findByRoleIdIn(roleIds).stream()
+            List<Long> authorizedBtnsMenuIds = repository.findByRoleIdIn(roleIds).stream()
                     .map(RoleMenu::getMenuId).distinct().toList();
+            List<Long> authorizedMenuIds = formBtnRepository.findFormBtnsByIdIn(authorizedBtnsMenuIds)
+                    .stream().map(FormBtn::getFormId).distinct().toList();
 
             // 2. 过滤出有权访问的菜单
             List<Menu> userMenus = allMenus.stream()
                     .filter(m -> authorizedMenuIds.contains(m.getId()))
                     .collect(Collectors.toList());
-
+            // 这里写死三级菜单
+            List<Long> menuIds = userMenus.stream().map(Menu::getParentId).distinct().toList();
+            List<Menu> firstMenus = allMenus.stream()
+                    .filter(m -> menuIds.contains(m.getId()))
+                    .toList();
+            userMenus.addAll(firstMenus);
             result = buildTree(userMenus);
         }
         return ResponseBean.getSuccess(result);
