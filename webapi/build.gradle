@@ -28,10 +28,8 @@ graalvmNative {
         main {
             // 4. 这里的名字要和你的主类对应
             imageName = 'webapi-app'
-            buildArgs.add('-J-Xmx6g') // 限制编译进程本身占用 4GB 内存
+            buildArgs.add('-J-Xmx10g') // 限制编译进程本身占用 4GB 内存
             buildArgs.add('-Ob') // 显著减少分析时间
-            // 核心修复：包含 Jimmer 运行所需的元数据文件
-            buildArgs.add('-H:IncludeResources=META-INF/jimmer/.*')
         }
 
     }

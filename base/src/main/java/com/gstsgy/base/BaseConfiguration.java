@@ -1,11 +1,11 @@
 package com.gstsgy.base;
 
 
-import com.gstsgy.base.conf.FreeMarkerNativeHints;
+import com.gstsgy.base.conf.NativeHints;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
-@ImportRuntimeHints(FreeMarkerNativeHints.class)
+@ImportRuntimeHints(NativeHints.class)
 @ComponentScan
 public class BaseConfiguration {
 

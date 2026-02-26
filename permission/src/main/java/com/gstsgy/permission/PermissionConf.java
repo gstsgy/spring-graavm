@@ -14,7 +14,7 @@ public class PermissionConf {
 //        GeneratorService.generateS(Btn.class, Dictionary.class, Form.class, FormBtn.class, FormCol.class,
 //                FormGrid.class, FormSingle.class, Menu.class, Operator.class, Role.class, RoleInterface.class, RoleMenu.class,
 //                UserRole.class);
-        GeneratorService.generateS(Form.class);
+        GeneratorService.generateS(ReqLog.class);
         System.out.println("Hello world!");
     }
 }

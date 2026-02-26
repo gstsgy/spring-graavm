@@ -1,6 +1,6 @@
 package com.gstsgy.webapi.bean.db;
 
-import com.gstsgy.base.bean.db.BaseTable;
+import com.gstsgy.base.bean.db.BusinessTable;
 import jakarta.persistence.Entity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -10,24 +10,7 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "消费流水")
 @Data
 @Entity
-public class Transactions extends BaseTable {
-    @Schema(description = "")
-    private String remark;
-
-    @Schema(description = "")
-    private String remark1;
-
-    @Schema(description = "")
-    private String remark2;
-
-    @Schema(description = "")
-    private String remark3;
-
-    @Schema(description = "")
-    private String remark4;
-
-    @Schema(description = "")
-    private String remark5;
+public class Transactions extends BusinessTable {
 
     @Schema(description = "")
     private Long userId;

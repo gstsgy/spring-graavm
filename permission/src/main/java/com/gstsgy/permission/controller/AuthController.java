@@ -3,7 +3,6 @@ package com.gstsgy.permission.controller;
 import com.gstsgy.base.bean.dto.ResponseBean;
 import com.gstsgy.base.utils.Encrypt;
 import com.gstsgy.base.utils.WebUtils;
-import com.gstsgy.permission.bean.db.Btn;
 import com.gstsgy.permission.bean.db.Operator;
 import com.gstsgy.permission.bean.view.MenuTreeVO;
 import com.gstsgy.permission.conf.IpConfCache;
