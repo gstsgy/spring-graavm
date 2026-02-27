@@ -2,3 +2,5 @@
 docker build -t my-app .
 docker save -o my-app.tar my-app:latest
 docker load -i my-app.tar
+
+docker system prune -f

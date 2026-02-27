@@ -1,8 +1,8 @@
 package com.gstsgy.permission.service.impl;
 
 import com.gstsgy.base.bean.dto.ResponseBean;
+import com.gstsgy.base.bean.dto.WebEnumVO;
 import com.gstsgy.permission.bean.db.Dictionary;
-import com.gstsgy.permission.bean.view.WebEnumVO;
 import com.gstsgy.permission.repository.DictionaryRepository;
 import com.gstsgy.permission.service.DictionaryService;
 import org.springframework.stereotype.Service;

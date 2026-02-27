@@ -1,7 +1,9 @@
 package com.gstsgy.base.controller;
 
+import com.gstsgy.base.bean.dto.PageQueryVO;
 import com.gstsgy.base.bean.dto.ResponseBean;
 import com.gstsgy.base.service.UniversalReportService;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("report")
+@RegisterReflectionForBinding({PageQueryVO.class})
 public class ReportController {
     @Autowired
     private UniversalReportService universalReportService;

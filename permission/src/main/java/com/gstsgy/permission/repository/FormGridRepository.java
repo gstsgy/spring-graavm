@@ -8,4 +8,6 @@ import java.util.List;
 public interface FormGridRepository extends BaseRepository<FormGrid> {
 
     List<FormGrid> findFormGridsByFormId(Long formId);
+
+    void deleteAllByFormId(Long formId);
 }

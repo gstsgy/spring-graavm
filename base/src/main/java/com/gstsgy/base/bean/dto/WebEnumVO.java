@@ -1,4 +1,4 @@
-package com.gstsgy.permission.bean.view;
+package com.gstsgy.base.bean.dto;
 
 import lombok.Data;
 

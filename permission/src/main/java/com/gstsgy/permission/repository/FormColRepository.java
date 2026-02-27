@@ -8,4 +8,6 @@ import java.util.List;
 public interface FormColRepository extends BaseRepository<FormCol> {
 
     List<FormCol> findFormColsByFormId(Long formId);
+
+    void deleteAllByFormId(Long formId);
 }

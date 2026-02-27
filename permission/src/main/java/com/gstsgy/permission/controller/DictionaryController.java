@@ -1,8 +1,8 @@
 package com.gstsgy.permission.controller;
 
 import com.gstsgy.base.bean.dto.ResponseBean;
+import com.gstsgy.base.bean.dto.WebEnumVO;
 import com.gstsgy.permission.bean.db.Dictionary;
-import com.gstsgy.permission.bean.view.WebEnumVO;
 import com.gstsgy.permission.service.DictionaryService;
 import com.gstsgy.base.controller.BaseController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "数据字典")
-@RegisterReflectionForBinding({Dictionary.class, WebEnumVO.class})
+@RegisterReflectionForBinding({Dictionary.class, WebEnumVO.class })
 @RestController
 @RequestMapping("dictionary")
 public class DictionaryController extends BaseController<DictionaryService, Dictionary> {

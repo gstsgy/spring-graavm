@@ -2,6 +2,7 @@ package com.gstsgy.permission.controller;
 
 import com.gstsgy.base.bean.dto.ResponseBean;
 import com.gstsgy.permission.bean.db.Menu;
+import com.gstsgy.permission.bean.view.MenuVO;
 import com.gstsgy.permission.service.MenuService;
 import com.gstsgy.base.controller.BaseController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "菜单")
-@RegisterReflectionForBinding({Menu.class})
+@RegisterReflectionForBinding({Menu.class, MenuVO.class})
 @RestController
 @RequestMapping("menu")
 public class MenuController extends BaseController<MenuService, Menu> {

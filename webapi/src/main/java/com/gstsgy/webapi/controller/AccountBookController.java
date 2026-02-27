@@ -1,7 +1,7 @@
 package com.gstsgy.webapi.controller;
 
 import com.gstsgy.base.bean.dto.ResponseBean;
-import com.gstsgy.base.bean.enums.WebEnumVO;
+import com.gstsgy.base.bean.dto.WebEnumVO;
 import com.gstsgy.webapi.bean.db.AccountBook;
 import com.gstsgy.webapi.service.AccountBookService;
 import com.gstsgy.base.controller.BaseController;
