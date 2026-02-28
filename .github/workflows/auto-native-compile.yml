@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: webapi-native-image
-          path: webapi/build/native/nativeCompile/
+          path: webapi/build/native/nativeCompile/webapi-app
