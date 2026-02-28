@@ -11,9 +11,16 @@ spring:
       hibernate:
         # 核心配置：自动为所有标识符（表名、列名）添加引号
         globally_quoted_identifiers: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   freemarker:
     template-loader-path: classpath:/report/
     suffix: .ftl
+  jackson:
+    deserialization:
+      ACCEPT_EMPTY_STRING_AS_NULL_OBJECT: true
+
 
 
 
