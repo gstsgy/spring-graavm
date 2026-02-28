@@ -14,6 +14,8 @@ import java.util.List;
 public class WebEnumVO {
     private Long id;
 
+    private Long rawParentId;
+
     private String model;
 
     private Object value;  //

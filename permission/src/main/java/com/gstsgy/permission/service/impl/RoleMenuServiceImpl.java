@@ -1,24 +1,28 @@
 package com.gstsgy.permission.service.impl;
 
 import com.gstsgy.base.bean.dto.ResponseBean;
-import com.gstsgy.permission.bean.db.FormBtn;
-import com.gstsgy.permission.bean.db.Menu;
-import com.gstsgy.permission.bean.db.RoleMenu;
-import com.gstsgy.permission.bean.db.UserRole;
+import com.gstsgy.base.utils.WebUtils;
+import com.gstsgy.permission.bean.db.*;
 import com.gstsgy.permission.bean.view.MenuTreeVO;
+import com.gstsgy.permission.bean.view.TreeNodeVO;
 import com.gstsgy.permission.repository.FormBtnRepository;
 import com.gstsgy.permission.repository.MenuRepository;
 import com.gstsgy.permission.repository.RoleMenuRepository;
 import com.gstsgy.permission.repository.UserRoleRepository;
 import com.gstsgy.permission.service.RoleMenuService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.gstsgy.base.service.impl.BaseServiceImpl;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.File;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,47 +31,195 @@ public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenu, RoleMenuRepos
     private MenuRepository menuRepository;
     @Autowired
     private UserRoleRepository userRoleRepository;
-
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
     @Autowired
     private FormBtnRepository formBtnRepository;
+
+
     @Override
     public ResponseBean getAllMenuTree(Integer type) {
-        return null;
+        long userId = WebUtils.getUserId();
+        List<TreeNodeVO> tree;
+
+        if (userId == 1) {
+            // 管理员逻辑：一次性查出所有菜单和按钮，在内存组装
+            tree = buildAdminTree();
+        } else {
+            // 普通用户逻辑：基于权限过滤
+            tree = buildUserPermissionsTree(userId);
+        }
+
+        return ResponseBean.getSuccess(tree);
     }
 
-//    @Override
-//    public ResponseBean getAllMenuTree(Integer type, Long userId) {
-//        if (userId == 1) {
-//            //查询模块
-//            List<MenuTreeVO> tree = menuRepository.findAllByTypeAndParentId( type,null).stream().sorted(Comparator.comparing(Menu::getSeq)).
-//                    map(MenuTreeVO::new).
-//                    collect(Collectors.toList());
-//            // 二级菜单
-//            tree.forEach(item -> item.setChildren(menuRepository.findAllByTypeAndParentId(type,item.getId()).
-//                    stream().sorted(Comparator.comparing(Menu::getSeq)).map(MenuTreeVO::new).peek(it -> it.setParentName(item.getName())).
-//                    collect(Collectors.toList())));
-//            return ResponseBean.getSuccess(tree);
-//        }
-//        // 查询所有菜单并缓存
-//
-//        List<Menu> allMenus = menuRepository.findAllByType(type);
-//
-//        Map<Long, Menu> mapMenus = allMenus.stream().collect(Collectors.toMap(Menu::getId, it -> it));
-//
-//
-//        // 1  通过用户 查询角色
-//        List<UserRole> list = userRoleRepository.findByUserId(userId);
-//        List<FormBtn> menuDOS = list.stream().flatMap(it -> this.repository.findByRoleId(it.getRoleId()).stream()).
-//                map(i->formBtnRepository.findById(i.getMenuId()).orElse(null)).toList();
-//        Map<Long, List<MenuTreeVO>> map =  menuDOS.stream().map(FormBtn::getFormId).distinct().map(mapMenus::get).filter(Objects::nonNull).
-//                map(MenuTreeVO::new).collect(Collectors.groupingBy(MenuTreeVO::getParentId));
-//
-//        List<MenuTreeVO> menuIdlist = map.keySet().stream().filter(Objects::nonNull).map(mapMenus::get).filter(Objects::nonNull).
-//                sorted(Comparator.comparingInt(Menu::getSeq)).
-//                map(MenuTreeVO::new).
-//                peek(item -> item.setChildren(map.get(item.getId()).stream().sorted(Comparator.comparingInt(MenuTreeVO::getOrder)).peek(it -> it.setParentName(item.getName())).collect(Collectors.toList()))).collect(Collectors.toList());
-//        return ResponseBean.getSuccess(menuIdlist);
-//    }
+    /**
+     * 管理员：全量加载（优化掉嵌套循环查询）
+     */
+    private List<TreeNodeVO> buildAdminTree() {
+        // 一次性查出所有菜单
+        List<Menu> allMenus = menuRepository.findAll();
+        // 一次性查出所有按钮
+        List<FormBtn> allBtns = formBtnRepository.findAll();
+
+        // 1. 按 ParentId 分组菜单
+        Map<Long, List<Menu>> menuByParent = allMenus.stream()
+                .filter(m -> m.getParentId() != null)
+                .collect(Collectors.groupingBy(Menu::getParentId));
+
+        // 2. 按 FormId 分组按钮
+        Map<Long, List<FormBtn>> btnsByPage = allBtns.stream()
+                .collect(Collectors.groupingBy(FormBtn::getFormId));
+
+        // 3. 组装顶层（模块）
+        return allMenus.stream()
+                .filter(m -> m.getParentId() == null)
+                .map(model -> {
+                    TreeNodeVO modelVO = new TreeNodeVO(model.getId(), model.getName());
+                    // 组装二级（页面）
+                    List<TreeNodeVO> pageVOs = menuByParent.getOrDefault(model.getId(), List.of()).stream()
+                            .map(page -> {
+                                TreeNodeVO pageVO = new TreeNodeVO(page.getId(), page.getName());
+                                // 组装三级（按钮）
+                                List<TreeNodeVO> btnVOs = btnsByPage.getOrDefault(page.getId(), List.of()).stream()
+                                        .map(btn -> new TreeNodeVO(btn.getId(), btn.getBtn().getName(), true))
+                                        .collect(Collectors.toList());
+                                pageVO.setChildren(btnVOs);
+                                return pageVO;
+                            }).collect(Collectors.toList());
+                    modelVO.setChildren(pageVOs);
+                    return modelVO;
+                }).collect(Collectors.toList());
+    }
+
+    /**
+     * 普通用户：基于角色权限过滤
+     */
+    private List<TreeNodeVO> buildUserPermissionsTree(Long userId) {
+        // 1. 获取用户所有的角色 ID
+        List<Long> roleIds = userRoleRepository.findByUserId(userId).stream()
+                .map(UserRole::getRoleId).toList();
+
+        // 2. 获取这些角色拥有的所有按钮 ID（通过关联表）
+        // 对应原逻辑：flatMap(it -> this.queryMenuIdByRoleId(it.getRoleId()))
+        List<Long> btnIds = repository.findByRoleIdIn(roleIds).stream().map(RoleMenu::getMenuId).toList();
+
+        // 3. 批量查询涉及到的按钮实体
+        List<FormBtn> myBtns = formBtnRepository.findAllById(btnIds);
+
+        // 4. 获取所有菜单用于内存匹配
+        Map<Long, Menu> menuMap = menuRepository.findAll().stream()
+                .collect(Collectors.toMap(Menu::getId, m -> m));
+
+        // 5. 逻辑分组：按钮 -> 页面(Parent) -> 模块(Grandparent)
+        Map<Long, List<FormBtn>> page2Btns = myBtns.stream()
+                .collect(Collectors.groupingBy(FormBtn::getFormId));
+
+        // 找出所有涉及到的页面级菜单
+        Map<Long, List<Menu>> model2Pages = page2Btns.keySet().stream()
+                .map(menuMap::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Menu::getParentId));
+
+        // 6. 最终组装
+        return model2Pages.keySet().stream()
+                .map(menuMap::get)
+                .filter(Objects::nonNull)
+                .map(model -> {
+                    TreeNodeVO modelVO = new TreeNodeVO(model.getId(), model.getName());
+                    List<TreeNodeVO> pageVOs = model2Pages.get(model.getId()).stream()
+                            .map(page -> {
+                                TreeNodeVO pageVO = new TreeNodeVO(page.getId(), page.getName());
+                                List<TreeNodeVO> btnVOs = page2Btns.getOrDefault(page.getId(), List.of()).stream()
+                                        .map(btn -> new TreeNodeVO(btn.getId(), btn.getBtn().getName(), true))
+                                        .collect(Collectors.toList());
+                                pageVO.setChildren(btnVOs);
+                                return pageVO;
+                            }).collect(Collectors.toList());
+                    modelVO.setChildren(pageVOs);
+                    return modelVO;
+                }).collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public ResponseBean getAllInterfaceTree() {
+        List<TreeNodeVO> tree = new ArrayList<>();
+        List<RoleInterface> mappings =  new ArrayList<>();
+        this.requestMappingHandlerMapping.getHandlerMethods().forEach((k,v)->{
+            Set<RequestMethod>methodSet =  k.getMethodsCondition().getMethods();
+            Set<String>urlSets =  k.getDirectPaths();
+            if(urlSets.isEmpty()){
+                if(k.getPathPatternsCondition()!=null){
+                    var pattern = k.getPathPatternsCondition().getFirstPattern();
+                    urlSets = new HashSet<>(List.of(pattern.getPatternString().replaceAll("/\\{[^}]+\\}$",""))) ;
+                }
+            }
+
+            if(!methodSet.isEmpty() && !urlSets.isEmpty()){
+                Class<?> controllerClass = v.getBeanType();
+                String controllerName = controllerClass.getName();
+                controllerName = controllerName.substring(controllerName.lastIndexOf(".") + 1);
+                String jarFileName = null;
+                try {
+                    jarFileName = getJarFileName(controllerClass);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                // permission-0.0.2.jar
+                if(!Objects.equals(jarFileName,"主项目")){
+                    jarFileName= jarFileName.substring(0,jarFileName.indexOf("-"));
+                }
+                RoleInterface roleInterfaceDO = new RoleInterface();
+                roleInterfaceDO.setController(controllerName);
+                roleInterfaceDO.setJar(jarFileName);
+                roleInterfaceDO.setMethod( methodSet.toArray()[0].toString());
+                roleInterfaceDO.setUrl(urlSets.toArray()[0].toString());
+                mappings.add(roleInterfaceDO);
+            }
+        });
+        Map<String,List<RoleInterface>> mapTemps = mappings.stream().collect(Collectors.groupingBy(RoleInterface::getJar));
+        AtomicLong index = new AtomicLong();
+        mapTemps.keySet().forEach(it->{
+            TreeNodeVO root = new TreeNodeVO(index.getAndIncrement(),it);
+            tree.add(root);
+            List<RoleInterface> controllers = mapTemps.get(it);
+            Map<String,List<RoleInterface>> controllersTemps = controllers.stream().collect(Collectors.groupingBy(RoleInterface::getController));
+            List<TreeNodeVO> controllerTrees = new ArrayList<>();
+            controllersTemps.keySet().forEach(controller->{
+                TreeNodeVO contr = new TreeNodeVO(index.getAndIncrement(),controller);
+                controllerTrees.add(contr);
+                List<TreeNodeVO> urlTrees = new ArrayList<>();
+                List<RoleInterface> urls = controllersTemps.get(controller);
+                urls.forEach(url->{
+                    TreeNodeVO urlTree = new TreeNodeVO(index.getAndIncrement(),url.getUrl()+"-"+url.getMethod(),true);
+                    urlTrees.add(urlTree);
+                });
+                contr.setChildren(urlTrees);
+            });
+            root.setChildren(controllerTrees);
+        });
+        return ResponseBean.getSuccess(tree);
+    }
+    public static String getJarFileName(Class<?> clazz) throws Exception {
+        String className = clazz.getName().replace('.', '/') + ".class";
+        URL classUrl = clazz.getClassLoader().getResource(className);
+        if (classUrl != null) {
+            String path = classUrl.getPath();
+            if (path.startsWith("file:")) {
+                path = path.substring(5);
+            }
+            path = URLDecoder.decode(path, StandardCharsets.UTF_8);
+            if (path.contains(".jar!")) {
+                return new File(path.substring(0, path.indexOf(".jar!") + 4)).getName();
+            } else {
+                return "主项目";
+            }
+        } else {
+            return "Class not found.";
+        }
+    }
 
     @Override
     public ResponseBean getAllMenuTree(Integer type, Long userId) {
@@ -153,5 +305,17 @@ public class RoleMenuServiceImpl extends BaseServiceImpl<RoleMenu, RoleMenuRepos
 
         return ResponseBean.getSuccess(true);
 
+    }
+
+    @Transactional
+    @Override
+    public void saveRoleMenu(Long roleId, List<Long> menuIds) {
+        repository.deleteByRoleId(roleId);
+        repository.saveAll(menuIds.stream().map(i->{
+            RoleMenu roleMenu = new RoleMenu();
+            roleMenu.setRoleId(roleId);
+            roleMenu.setMenuId(i);
+            return roleMenu;
+        }).toList());
     }
 }

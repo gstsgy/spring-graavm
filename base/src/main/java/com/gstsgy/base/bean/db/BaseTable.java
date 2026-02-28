@@ -36,8 +36,6 @@ public class BaseTable {
         this.updateId = userId;
         this.insertYmd = now;
         this.updateYmd = now;
-        // 验证日志
-        System.out.println("Native-PrePersist: UserID=" + userId + ", Entity=" + this.getClass().getSimpleName());
     }
 
     @PreUpdate

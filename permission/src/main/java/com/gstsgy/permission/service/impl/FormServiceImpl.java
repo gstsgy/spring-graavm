@@ -43,7 +43,7 @@ public class FormServiceImpl extends BaseServiceImpl<Form, FormRepository> imple
         List<FormBtn> formBtns=formBtnRepository.findFormBtnsByFormId(formId);
         // 2. 提取所有 ID 并去重/过滤 null
         List<Long> btnIds = formBtns.stream()
-                .map(FormBtn::getBtnId)
+                .map(it->it.getBtn().getId())
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();

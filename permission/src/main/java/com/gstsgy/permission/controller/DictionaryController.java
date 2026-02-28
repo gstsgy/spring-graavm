@@ -30,4 +30,10 @@ public class DictionaryController extends BaseController<DictionaryService, Dict
     public ResponseBean queryDictMap(@RequestParam("modelCode")String modelCode) {
         return service.queryDictMap( modelCode);
     }
+
+    @Operation(description="查询树")
+    @GetMapping("tree")
+    public ResponseBean queryTree() {
+        return ResponseBean.getSuccess(service.queryDictEnumSelf( null)) ;
+    }
 }

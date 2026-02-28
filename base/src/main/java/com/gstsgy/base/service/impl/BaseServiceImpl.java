@@ -11,6 +11,7 @@ import com.gstsgy.base.repository.BaseRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gstsgy.base.service.BaseService;
 import org.springframework.util.ReflectionUtils;
 
-public abstract  class BaseServiceImpl<T extends BaseTable,M extends BaseRepository<T>> implements BaseService<T>{
+public abstract  class BaseServiceImpl<T extends BaseTable,M extends BaseRepository<T>> implements BaseService<T> {
 
+//    private Map<String, Object> uniqueValues = new HashMap<>();
+//    private List<String> notUpdateFields = new ArrayList<>();
     @Autowired
     protected M repository;
     @Override

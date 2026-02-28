@@ -9,4 +9,6 @@ public interface RoleMenuRepository extends BaseRepository<RoleMenu> {
     List<RoleMenu> findByRoleId(Long roleId);
 
     List<RoleMenu> findByRoleIdIn(List<Long> roleIds);
+
+    void deleteByRoleId(Long roleId);
 }

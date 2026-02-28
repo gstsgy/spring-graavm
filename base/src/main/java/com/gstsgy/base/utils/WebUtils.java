@@ -157,7 +157,6 @@ public class WebUtils {
      */
 
     public static Long getUserId() {
-        System.out.println(userIdThread.get());
         return userIdThread.get();
     }
 }
