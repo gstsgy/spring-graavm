@@ -1,0 +1,33 @@
+name: Auto Native Compile
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  native-compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '17'
+          distribution: 'graalvm-community'
+
+      - name: Grant execute permission to Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: Run nativeCompile for :webapi module
+        run: ./gradlew :webapi:nativeCompile
+
+      - name: Upload native binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapi-native-image
+          path: webapi/build/native/nativeCompile/
