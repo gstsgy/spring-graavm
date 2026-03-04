@@ -26,3 +26,45 @@
 
     order by s.time desc, s.user_id, s.insert_ymd desc
 </#macro>
+
+<#-- 根据月度信息汇总查寻 -->
+<#macro monthly>
+    select left(time,7) as  month,round(sum(value),2)  as expense,0 as income from transactions s
+    where
+    is_del = 0
+    and account_id = :accountId
+    group by  left(time,7)
+    order by month desc
+</#macro>
+<#-- 根据年度信息汇总查寻 -->
+<#macro yearly>
+    select left(time,4) as  year,round(sum(value),2)  as expense,0 as income from transactions s
+    where
+    is_del = 0
+    and left(time,4) = :year
+    and account_id = :accountId
+    group by  left(time,4)
+
+    order by year
+</#macro>
+<#-- 获取月度消费明细（按类型汇总） -->
+<#macro monthlyDetail>
+    select type,count(1) as count,round(sum(value),2) as amount from transactions
+    where is_del = 0
+    and left(time,7) = :month
+    and model =-1
+    and account_id = :accountId
+    group by type
+    order by amount desc
+</#macro>
+
+<#-- 获取月度消费明细（按类型汇总） -->
+<#macro yearlyDetail>
+    select type,count(1) as count,round(sum(value),2) as amount from transactions
+    where is_del = 0
+    and left(time,4) = :year
+    and model =-1
+    and account_id = :accountId
+    group by type
+    order by amount desc
+</#macro>
